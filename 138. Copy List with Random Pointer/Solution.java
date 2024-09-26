@@ -14,26 +14,66 @@ class Node {
 */
 
 class Solution {
-    public Node copyRandomList(Node head) {
-        Map<Node,Node>map = new HashMap<>();
 
-        Node temp = head;
+    private void createACopy(Node head) {
+        Node ptr = head;
 
-        while(temp!=null){
-            Node newNode = new Node(temp.val);
-            map.put(temp,newNode);
+        while (ptr != null) {
+            Node newCopyNode = new Node(ptr.val);
+            Node nextNode = ptr.next;
+
+            newCopyNode.next = nextNode;
+
+            ptr.next = newCopyNode;
+            ptr = nextNode;
+        }
+    }
+
+    private void connectRandomPointer(Node head) {
+        Node ptr = head;
+
+        while (ptr != null) {
+            Node copiedNode = ptr.next;
+            //ptr.random.next -> bcz ptr.random points to orignal list but we need to map the copied node which are present
+            //next to tha orignal Node which random pointer is pointing 
+            if(ptr.random!=null){
+                copiedNode.random = ptr.random.next;
+            }
+            else{
+                copiedNode.random =null;
+            }
+
+            ptr = copiedNode.next;
+        }
+    }
+
+    private Node getCopiedList(Node head){
+        Node dummy  = new Node(-1);
+        Node temp =dummy;
+        Node ptr = head;
+
+        while(ptr!=null){
+            temp.next=ptr.next;
             temp=temp.next;
+            ptr.next = temp.next;
+            ptr=ptr.next;
+
         }
+        return dummy.next;
+    }
 
-        temp = head;
+    public Node copyRandomList(Node head) {
 
-        while(temp!=null){
-            Node copyNode = map.get(temp);
-            copyNode.next = map.get(temp.next);
-            copyNode.random = map.get(temp.random);
-            temp = temp.next;
-        }
+        if (head == null)
+            return head;
 
-        return map.get(head);
+        createACopy(head);
+
+        connectRandomPointer(head);
+
+        Node dummy = getCopiedList(head);
+
+        return dummy;
+
     }
 }
